@@ -4,11 +4,20 @@
 /**************************************************************************************
 * Функция рисует шапку таблицы
 **************************************************************************************/
-function write_table_shapka($link) {
+function write_table_shapka($link, $shop_name) {
 echo <<<HTML
 <div class="center_form">
 <form action="$link" method="post">
 <table>
+
+<tr class="prods_table">
+
+    <td colspan="12" >$shop_name</td>
+
+
+</tr>
+
+
 <tr class="prods_table">
     <!-- <td width="30">пп</td> -->
     <td width="100">артикул 1С</td>
@@ -35,7 +44,7 @@ HTML;
 **************************************************************************************/
 
 // function write_BODY_table ($mp_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) {
-function write_BODY_table ($mp_catalog, $all_catalogs, $arr_sell_tovari ) {
+function write_BODY_table ($mp_catalog, $all_catalogs, $arr_sell_tovari, $shop_name) {
 
 foreach ($mp_catalog as $article) {
      // получаем процент распределения товаров по каждому артикулу для каждого магазина
@@ -147,13 +156,13 @@ if ($check_update  == 1) {
 echo  "<td>$check_update</td>";
 
             echo "</tr>";
-            
+                    
         }
         
         
         echo <<<HTML
         </table>
-        
+        <input hidden type="text" name="shop_name" value=$shop_name>
         <input class="btn" type="submit" value="ОБНОВИТЬ ДАННЫЕ">
         </form>
         </div>

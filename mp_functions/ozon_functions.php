@@ -104,7 +104,7 @@ function get_new_zakazi_ozon ($token_ozon, $client_id_ozon, $ozon_catalog) {
             }
             
         }
-        
+    //  print_r ( $arr_products);   
         foreach ($arr_products as $key=>$prods) {
             foreach ($ozon_catalog as &$items_ozon) {
 

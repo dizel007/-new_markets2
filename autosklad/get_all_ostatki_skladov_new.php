@@ -24,16 +24,27 @@ if (isset($_GET['return'])) {
     $return_after_update = 0;
 }
 
+// Если вернулись сюда после обновления объема товараа
 if ($return_after_update == 777) {
     
     $arr_article_items = json_decode(file_get_contents("uploads/array_items.json"));
+    
+    foreach ($arr_article_items as $key=>$itemss ) {
+        foreach ($itemss as $mp_key=>$ostatok) {
+            if ($mp_key == 'MP') {
+                $arr_new_ostatoki_MP[mb_strtolower($key)] = $ostatok ; // массив остатков из 1С
+            }
+        }
+        
+    
+    }
     // echo "<pre >";
     // print_r ($arr_article_items);
     // die();
 
 } else {
-$uploaddir = "uploads/";
 if (isset($_FILES['file_excel'])) {
+$uploaddir = "uploads/";
 $uploadfile = $uploaddir . basename( $_FILES['file_excel']['name']);
 
     if(move_uploaded_file($_FILES['file_excel']['tmp_name'], $uploadfile))
@@ -45,29 +56,15 @@ $uploadfile = $uploaddir . basename( $_FILES['file_excel']['name']);
             die ("DIE ОШИБКА при загрузке файла");
     }
 } else {
+    echo "<br> ХЕР ЗНАЕТ КАК СЮДА ПОПАЛИ<br>";
     die ("DIE НЕТ ЗАГРУЖАЕМОГО файла");
 }
+
+
 // $xls = PHPExcel_IOFactory::load('temp_sklad/temp.xlsx');
 $xls = PHPExcel_IOFactory::load($uploadfile);
 $arr_new_ostatoki_MP =  Parce_excel_1c_sklad ($xls) ; // парсим Загруженный файл и формируем JSON архив для дальнейшей работы
 }
-// // Оставляем массив ключ (артикул) значение остаток
-// foreach ($arr_article_items as $key=>$itemss ) {
-//     foreach ($itemss as $mp_key=>$ostatok) {
-//         if ($mp_key == 'MP') {
-//             $arr_new_ostatoki_MP[mb_strtolower($key)] = $ostatok ; // массив остатков из 1С
-//         }
-//     }
-    
-
-// }
-
-// print_r($arr_new_ostatoki_MP);
-// die();
-
-
-
-
 
 
 // Получаем все токены
@@ -101,9 +98,9 @@ $arr_all_nomenklatura = select_all_nomenklaturu($pdo);
 // print_r($arr_all_nomenklatura);
 
 // Формируем каталоги товаров
-$wb_catalog   = get_catalog_tovarov_v_mp('wb_anmaks', $pdo);
-$wbip_catalog = get_catalog_tovarov_v_mp('wb_ip_goryachev', $pdo); // фомируем каталог
-$ozon_catalog = get_catalog_tovarov_v_mp('ozon_anmaks', $pdo); // получаем озон каталог
+$wb_catalog      = get_catalog_tovarov_v_mp('wb_anmaks', $pdo);
+$wbip_catalog    = get_catalog_tovarov_v_mp('wb_ip_goryachev', $pdo); // фомируем каталог
+$ozon_catalog    = get_catalog_tovarov_v_mp('ozon_anmaks', $pdo); // получаем озон каталог
 $ozon_ip_catalog = get_catalog_tovarov_v_mp('ozon_ip_zel', $pdo); // получаем озон каталог
 
 
@@ -158,23 +155,23 @@ $arr_sell_tovari = make_array_all_sell_tovarov($all_catalogs);
 // print_r($arr_sell_tovari);
 // die();
 // // выводим шапку таблицы ВБ
-write_table_shapka('update_all_markets.php');
-write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari ) ;
+write_table_shapka('update_all_markets.php', 'ВБ ООО ТД АНМАКС');
+write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari,'wb_anmaks' ) ;
 // write_BODY_table ($wb_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
 
 // // // выводим шапку таблицы ВБ ИП ГОР
-write_table_shapka('#');
-write_BODY_table ($wbip_catalog, $all_catalogs, $arr_sell_tovari ) ;
+write_table_shapka('update_all_markets.php', 'ВБ ИП ГОРЯЧЕВ' );
+write_BODY_table ($wbip_catalog, $all_catalogs, $arr_sell_tovari, 'wb_ip_goryachev' ) ;
 // write_BODY_table ($wbip_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
 
 // // выводим шапку таблицы ОЗОН ООО
-write_table_shapka('#');
-write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari ) ;
+write_table_shapka('update_all_markets.php' , 'ОЗОН ООО ТД АНМАКС');
+write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari, 'ozon_anmaks' ) ;
 // write_BODY_table ($ozon_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
 
 // выводим шапку таблицы ОЗОН ООО
-write_table_shapka('#');
-write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari ) ;
+write_table_shapka('update_all_markets.php' , 'ОЗОН ИП ЗЕЛ');
+write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari, 'ozon_ip_zel' ) ;
 // write_BODY_table ($ozon_ip_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
 
 
