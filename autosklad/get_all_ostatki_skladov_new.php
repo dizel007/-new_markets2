@@ -142,6 +142,9 @@ $wbip_catalog    = get_db_procent_magazina ($wbip_catalog, $sklads, 'wb_ip_gorya
 $ozon_catalog    = get_db_procent_magazina ($ozon_catalog, $sklads, 'ozon_anmaks', $arr_new_ostatoki_MP);
 $ozon_ip_catalog = get_db_procent_magazina ($ozon_ip_catalog, $sklads, 'ozon_ip_zel', $arr_new_ostatoki_MP);
 
+
+// print_r ($ozon_ip_catalog);
+// die();
 //*****************************  Формируем массив из всех каталогов  *****************************
 
 $all_catalogs[]= $wb_catalog;

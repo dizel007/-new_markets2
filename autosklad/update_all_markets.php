@@ -159,9 +159,9 @@ $token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
         $result_ozon = post_with_data_ozon($token_ozon_ip, $client_id_ozon_ip, $send_data, $ozon_dop_url );
         }
     
-        print_r($result_ozon);
+        // print_r($result_ozon);
 
-        die('jjj');
+        // die('jjj');
 
     }
 
