@@ -40,9 +40,9 @@ $res = put_query_with_data($token_wb, $link_wb, $data_wb);
 }
 
 /* **************************   МАссив WB IP oбновления *********************************** */
-if ($shop_name == 'wb_ip_goryachev') {
+if ($shop_name == 'wb_ip_zel') {
     // ВБ ГОР
-$token_wb_ip = $arr_tokens['wb_ip_goryachev']['token'];
+$token_wb_ip = $arr_tokens['wb_ip_zel']['token'];
 
     $wb_update_items_quantity = razbor_post_massive_mp($_POST);
     
@@ -55,7 +55,7 @@ $token_wb_ip = $arr_tokens['wb_ip_goryachev']['token'];
     
         }
         
-    $warehouseId = 221597;
+    $warehouseId = 946290;
     $link_wb = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$warehouseId;
     $res = put_query_with_data($token_wb_ip, $link_wb, $data_wb);
     
@@ -115,11 +115,6 @@ $token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
 
     $ozon_update_items_quantity = razbor_post_massive_mp($_POST);
     $arr_catalog =  get_catalog_tovarov_v_mp('ozon_ip_zel', $pdo);
-    // echo ("<pre>");
-    // print_r($ozon_update_items_quantity);
-    // echo "<br>******************************** <br>";
-    // print_r($arr_catalog);
- 
     
     if ($ozon_update_items_quantity <> "no_data") {
     

@@ -5,6 +5,7 @@ require_once '../pdo_functions/pdo_functions.php';
 require_once '../libs/PHPExcel-1.8/Classes/PHPExcel.php';
 require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
 require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
+
 require_once "../mp_functions/ozon_api_functions.php";
 require_once "../mp_functions/ozon_functions.php";
 require_once "../mp_functions/wb_api_functions.php";
@@ -50,38 +51,27 @@ $uploadfile = $uploaddir . basename( $_FILES['file_excel']['name']);
     if(move_uploaded_file($_FILES['file_excel']['tmp_name'], $uploadfile))
             {
             echo "Файл с остатками товаров, УСПЕШНО ЗАГРУЖЕН<br>";
-            }
+            // $xls = PHPExcel_IOFactory::load('temp_sklad/temp.xlsx');
+            $xls = PHPExcel_IOFactory::load($uploadfile);
+            $arr_new_ostatoki_MP =  Parce_excel_1c_sklad ($xls) ; // парсим Загруженный файл и формируем JSON архив для дальнейшей работы
+            
+           }
             else
             {
+                
             die ("DIE ОШИБКА при загрузке файла");
-    }
-} else {
-    echo "<br> ХЕР ЗНАЕТ КАК СЮДА ПОПАЛИ<br>";
-    die ("DIE НЕТ ЗАГРУЖАЕМОГО файла");
+              }
+} 
+
+
+
 }
 
 
-// $xls = PHPExcel_IOFactory::load('temp_sklad/temp.xlsx');
-$xls = PHPExcel_IOFactory::load($uploadfile);
-$arr_new_ostatoki_MP =  Parce_excel_1c_sklad ($xls) ; // парсим Загруженный файл и формируем JSON архив для дальнейшей работы
-}
-
-
-// Получаем все токены
-$arr_tokens = get_tokens($pdo);
-// ВБ АНМАКС
-$token_wb = $arr_tokens['wb_anmaks']['token'];
-// ВБ ГОР
-$token_wb_ip = $arr_tokens['wb_ip_goryachev']['token'];
-// ОЗОН АНМКАС
-$client_id_ozon = $arr_tokens['ozon_anmaks']['id_market'];
-$token_ozon = $arr_tokens['ozon_anmaks']['token'];
-// озон ИП зел
-$client_id_ozon_ip = $arr_tokens['ozon_ip_zel']['id_market'];
-$token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
 
 // Доставем информацию по складам ****** АКТИВНЫМ СКЛАДАМ ******
 $sklads = select_info_about_sklads($pdo); // ОБщая Информация по складам
+
 
 // Находим общее количество проценьлв, которое нужно распределить
 $all_procent_for_all_shops=0;
@@ -97,27 +87,35 @@ $arr_all_nomenklatura = select_all_nomenklaturu($pdo);
 
 // print_r($arr_all_nomenklatura);
 
+
+// Названия магазинов
+$wb_anmaks = 'wb_anmaks';
+$wb_ip = 'wb_ip_zel';
+$ozon_anmaks = 'ozon_anmaks';
+$ozon_ip = 'ozon_ip_zel';
+
 // Формируем каталоги товаров
-$wb_catalog      = get_catalog_tovarov_v_mp('wb_anmaks', $pdo);
-$wbip_catalog    = get_catalog_tovarov_v_mp('wb_ip_goryachev', $pdo); // фомируем каталог
-$ozon_catalog    = get_catalog_tovarov_v_mp('ozon_anmaks', $pdo); // получаем озон каталог
-$ozon_ip_catalog = get_catalog_tovarov_v_mp('ozon_ip_zel', $pdo); // получаем озон каталог
+$wb_catalog      = get_catalog_tovarov_v_mp($wb_anmaks , $pdo);
+$wbip_catalog    = get_catalog_tovarov_v_mp($wb_ip, $pdo); // фомируем каталог
+$ozon_catalog    = get_catalog_tovarov_v_mp($ozon_anmaks, $pdo); // получаем озон каталог
+$ozon_ip_catalog = get_catalog_tovarov_v_mp($ozon_ip, $pdo); // получаем озон каталог
 
 
 // Формируем массив в номенклатурой, с учетом того, что один товар можнт продаваться под разным артикулом на Маркете
 
 
+
+
 /* *****************************      Получаем Фактические остатки с ВБ *****************************/
-$wb_catalog = get_ostatki_wb ($token_wb, $wb_catalog, $sklads['wb_anmaks']['warehouseId']);
+$wb_catalog = get_ostatki_wb ($token_wb, $wb_catalog, $sklads[$wb_anmaks ]['warehouseId']);
 //*****************************      Достаем фактически заказанные товары  *****************************
 $wb_catalog = get_new_zakazi_wb ($token_wb, $wb_catalog);
 
 
 /* *****************************      Получаем Фактические остатки с ВБ ИП *****************************/
-$wbip_catalog = get_ostatki_wb ($token_wb_ip, $wbip_catalog, $sklads['wb_ip_goryachev']['warehouseId']); // цепляем остатки 
+$wbip_catalog = get_ostatki_wb ($token_wb_ip, $wbip_catalog, $sklads[$wb_ip]['warehouseId']); // цепляем остатки 
 //*****************************      Достаем фактически заказанные товары  WB IP *****************************
 $wbip_catalog = get_new_zakazi_wb ($token_wb_ip, $wbip_catalog);
-
 
 //***************************** Получаем Фактические остатки с OZON *****************************
 $ozon_catalog = get_ostatki_ozon ($token_ozon, $client_id_ozon, $ozon_catalog); // цепояем остатки
@@ -137,10 +135,10 @@ $ozon_ip_catalog = get_new_zakazi_ozon ($token_ozon_ip, $client_id_ozon_ip, $ozo
 //*****************************  *************
 
 // Добавляем в каталог процент распрделения и остаток из 1С для магазина Озон ООО 
-$wb_catalog      = get_db_procent_magazina ($wb_catalog, $sklads, 'wb_anmaks', $arr_new_ostatoki_MP);
-$wbip_catalog    = get_db_procent_magazina ($wbip_catalog, $sklads, 'wb_ip_goryachev', $arr_new_ostatoki_MP);
-$ozon_catalog    = get_db_procent_magazina ($ozon_catalog, $sklads, 'ozon_anmaks', $arr_new_ostatoki_MP);
-$ozon_ip_catalog = get_db_procent_magazina ($ozon_ip_catalog, $sklads, 'ozon_ip_zel', $arr_new_ostatoki_MP);
+$wb_catalog      = get_db_procent_magazina ($wb_catalog, $sklads, $wb_anmaks , $arr_new_ostatoki_MP);
+$wbip_catalog    = get_db_procent_magazina ($wbip_catalog, $sklads, $wb_ip, $arr_new_ostatoki_MP);
+$ozon_catalog    = get_db_procent_magazina ($ozon_catalog, $sklads, $ozon_anmaks, $arr_new_ostatoki_MP);
+$ozon_ip_catalog = get_db_procent_magazina ($ozon_ip_catalog, $sklads, $ozon_ip, $arr_new_ostatoki_MP);
 
 
 // print_r ($ozon_ip_catalog);
@@ -159,23 +157,20 @@ $arr_sell_tovari = make_array_all_sell_tovarov($all_catalogs);
 // die();
 // // выводим шапку таблицы ВБ
 write_table_shapka('update_all_markets.php', 'ВБ ООО ТД АНМАКС');
-write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari,'wb_anmaks' ) ;
-// write_BODY_table ($wb_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
+write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari, $wb_anmaks  ) ;
 
 // // // выводим шапку таблицы ВБ ИП ГОР
-write_table_shapka('update_all_markets.php', 'ВБ ИП ГОРЯЧЕВ' );
-write_BODY_table ($wbip_catalog, $all_catalogs, $arr_sell_tovari, 'wb_ip_goryachev' ) ;
-// write_BODY_table ($wbip_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
+write_table_shapka('update_all_markets.php', 'ВБ ИП' );
+write_BODY_table ($wbip_catalog, $all_catalogs, $arr_sell_tovari, $wb_ip ) ;
 
 // // выводим шапку таблицы ОЗОН ООО
 write_table_shapka('update_all_markets.php' , 'ОЗОН ООО ТД АНМАКС');
-write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari, 'ozon_anmaks' ) ;
-// write_BODY_table ($ozon_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
+write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari, $ozon_anmaks ) ;
 
 // выводим шапку таблицы ОЗОН ООО
 write_table_shapka('update_all_markets.php' , 'ОЗОН ИП ЗЕЛ');
-write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari, 'ozon_ip_zel' ) ;
-// write_BODY_table ($ozon_ip_catalog, $wb_catalog, $wbip_catalog, $ozon_catalog , $sklads , $arr_sell_tovari ) ;
+write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari, $ozon_ip ) ;
+
 
 
 

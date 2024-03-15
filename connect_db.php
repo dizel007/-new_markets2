@@ -10,7 +10,7 @@ require_once 'libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
 
 require_once 'libs/fpdf/fpdf.php'; // библиотккеа для создания ПДф файилов
 
-
+require_once 'pdo_functions/pdo_functions.php'; // подключаем функции  взаимодейцстя  с БД
  
       try {  
         $pdo = new PDO('mysql:host='.$host.';dbname='.$db.';charset=utf8', $user, $password);
@@ -26,8 +26,23 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])) // Проверяем з�
     $stmt = $pdo->prepare("SELECT * FROM users WHERE user_hash='" . $_COOKIE['hash'] . "' LIMIT 1");
     $stmt->execute([]);
     $userdata_temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // $userdata = call_user_func_array('array_merge', $userdata); // Уменьшаем уровень вложенности массива  
-$userdata =  $userdata_temp[0];       
+
+   $userdata =  $userdata_temp[0];     
+   
+   
+    // Получаем все токены
+    $arr_tokens = get_tokens($pdo);
+    // ВБ АНМАКС
+    $token_wb = $arr_tokens['wb_anmaks']['token'];
+    // ВБ ZEL
+    $token_wb_ip = $arr_tokens['wb_ip_zel']['token'];
+    // ОЗОН АНМКАС
+    $client_id_ozon = $arr_tokens['ozon_anmaks']['id_market'];
+    $token_ozon = $arr_tokens['ozon_anmaks']['token'];
+    // озон ИП зел
+    $client_id_ozon_ip = $arr_tokens['ozon_ip_zel']['id_market'];
+    $token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
+
 
 
 // ***************   проверяем введеный хэш пароля с тем, что храниться в БД  ***************************

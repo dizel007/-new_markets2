@@ -1,4 +1,5 @@
 <?php
+require_once "connect_db.php";
 
 echo <<<HTML
 
@@ -8,7 +9,8 @@ echo <<<HTML
 
 
 <span>Выберите файл</span>
-	<input required type="file" name="file_excel" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">		
+	<!-- <input required type="file" name="file_excel" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">		 -->
+	<input  type="file" name="file_excel" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">		
 	
  	
         
