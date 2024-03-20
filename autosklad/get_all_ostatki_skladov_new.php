@@ -2,9 +2,9 @@
 require_once '../connect_db.php';
 require_once '../pdo_functions/pdo_functions.php';
 
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel.php';
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
 
 require_once "../mp_functions/ozon_api_functions.php";
 require_once "../mp_functions/ozon_functions.php";
@@ -59,7 +59,20 @@ $uploadfile = $uploaddir . basename( $_FILES['file_excel']['name']);
             else
             {
                 
-            die ("DIE ОШИБКА при загрузке файла");
+            // die ("DIE ОШИБКА при загрузке файла");
+            echo "<h1>Подгружены данные из последнего JSON файла</h1>";
+            $arr_article_items = json_decode(file_get_contents("uploads/array_items.json"));
+
+            foreach ($arr_article_items as $key=>$itemss ) {
+                foreach ($itemss as $mp_key=>$ostatok) {
+                    if ($mp_key == 'MP') {
+                        $arr_new_ostatoki_MP[mb_strtolower($key)] = $ostatok ; // массив остатков из 1С
+                    }
+                }
+                
+            
+            }
+
               }
 } 
 
@@ -74,13 +87,12 @@ $sklads = select_info_about_sklads($pdo); // ОБщая Информация п�
 
 
 // Находим общее количество проценьлв, которое нужно распределить
-$all_procent_for_all_shops=0;
-foreach ($sklads as $sklad) {
-$all_procent_for_all_shops+=$sklad['procent']; // сумма всех процентов для распрделения
-}
+// $all_procent_for_all_shops=0;
+// foreach ($sklads as $sklad) {
+// $all_procent_for_all_shops+=$sklad['procent']; // сумма всех процентов для распрделения
+// }
 
 $arr_need_ostatok = get_min_ostatok_tovarov($pdo); // массив с утвержденным неснижаемым остатком
-
 
 // Вся продаваемая номенклатура
 $arr_all_nomenklatura = select_all_nomenklaturu($pdo);
@@ -156,6 +168,9 @@ $arr_sell_tovari = make_array_all_sell_tovarov($all_catalogs);
 // print_r($arr_sell_tovari);
 // die();
 // // выводим шапку таблицы ВБ
+
+// write_table_Sum_information($arr_new_ostatoki_MP, $arr_sell_tovari, $arr_need_ostatok);
+
 write_table_shapka('update_all_markets.php', 'ВБ ООО ТД АНМАКС');
 write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari, $wb_anmaks  ) ;
 
@@ -171,7 +186,10 @@ write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari, $ozon_anmaks )
 write_table_shapka('update_all_markets.php' , 'ОЗОН ИП ЗЕЛ');
 write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari, $ozon_ip ) ;
 
-
+// print_r($arr_new_ostatoki_MP);
+// print_r($arr_sell_tovari);
+// print_r($arr_need_ostatok); // массив с утвержденным неснижаемым остатком
+// print_r($arr_all_nomenklatura); // Вся продаваемая номенклатура
 
 
 die();

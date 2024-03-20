@@ -13,51 +13,21 @@ $arr_tokens = get_tokens($pdo);
 
 // НАзвание магазина, который обновляем
 $shop_name = $_POST['shop_name'];
-
+file_put_contents("$shop_name".".json",json_encode($_POST));
 echo "<br>$shop_name<br>";
 echo "<pre>";
 
 /* **************************   МАссив для обновления ВБ *********************************** */
 if ($shop_name == 'wb_anmaks') {
-    // ВБ АНМАКС
-$token_wb = $arr_tokens['wb_anmaks']['token'];
-$wb_update_items_quantity = razbor_post_massive_mp($_POST);
-
-
-print_r ($wb_update_items_quantity);
-if ($wb_update_items_quantity <> "no_data") {
-    foreach ($wb_update_items_quantity as $wb_item) {
-        $data_wb["stocks"][] = $wb_item;
-    }
-
-    }
-
-
-$warehouseId = 34790;
-$link_wb = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$warehouseId;
-$res = put_query_with_data($token_wb, $link_wb, $data_wb);
-
+    $warehouseId = 34790;
+     update_ostatki_WB($arr_tokens, $warehouseId , $shop_name) ;
 }
 
 /* **************************   МАссив WB IP oбновления *********************************** */
 if ($shop_name == 'wb_ip_zel') {
-    // ВБ ГОР
-$token_wb_ip = $arr_tokens['wb_ip_zel']['token'];
-
-    $wb_update_items_quantity = razbor_post_massive_mp($_POST);
-    
-    echo "<pre>";
-    print_r ($wb_update_items_quantity);
-    if ($wb_update_items_quantity <> "no_data") {
-        foreach ($wb_update_items_quantity as $wb_item) {
-            $data_wb["stocks"][] = $wb_item;
-        }
-    
-        }
-        
-    $warehouseId = 946290;
-    $link_wb = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$warehouseId;
-    $res = put_query_with_data($token_wb_ip, $link_wb, $data_wb);
+    // ВБ Зел
+    $warehouseId =  946290;
+    update_ostatki_WB($arr_tokens, $warehouseId , $shop_name) ;
     
     }
     
@@ -65,43 +35,8 @@ $token_wb_ip = $arr_tokens['wb_ip_zel']['token'];
 
 if ($shop_name == 'ozon_anmaks') {
     // ОЗОН АНМКАС
-$client_id_ozon = $arr_tokens['ozon_anmaks']['id_market'];
-$token_ozon = $arr_tokens['ozon_anmaks']['token'];
-
-$ozon_update_items_quantity = razbor_post_massive_mp($_POST);
-$arr_catalog =  get_catalog_tovarov_v_mp('ozon_anmaks', $pdo);
-
-echo ("<pre>");
-
-if ($ozon_update_items_quantity <> "no_data") {
-
-    // добавляем к массиву артикул
-    foreach ($ozon_update_items_quantity as &$item) {
-    
-        foreach ($arr_catalog as $prods) {
-         if ($item ['sku'] == $prods['barcode']) {
-            $item['article'] = $prods['mp_article'];
-            $item['real_sku'] = $prods['sku'];
-         }
-        }
-    }
-
-    unset($item);
-    
-    // Формируем массив для метода ОЗОНа по обновления остатков
-    foreach ($ozon_update_items_quantity as $prods) {
-        $temp_data_send[] = 
-            array(
-                "offer_id" =>  $prods['article'],
-                "product_id" =>   $prods['real_sku'], // для обновления нужен СКУ а не баркод (поэтому подставляем СКУ)
-                "stock" => $prods['amount'],
-               );
-        }
-    $send_data =  array("stocks" => $temp_data_send);
-    $send_data = json_encode($send_data, JSON_UNESCAPED_UNICODE)  ;
-    $ozon_dop_url = "v1/product/import/stocks";
-    $result_ozon = post_with_data_ozon($token_ozon, $client_id_ozon, $send_data, $ozon_dop_url );
-    }
+    update_ostatki_OZON($arr_tokens,$pdo, 'ozon_anmaks') ;
+    // update_OZON_ooo_anmaks($arr_tokens,$pdo);
 
     
 }
@@ -110,53 +45,8 @@ if ($ozon_update_items_quantity <> "no_data") {
 
 if ($shop_name == 'ozon_ip_zel') {
     // озон ИП зел
-$client_id_ozon_ip = $arr_tokens['ozon_ip_zel']['id_market'];
-$token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
-
-    $ozon_update_items_quantity = razbor_post_massive_mp($_POST);
-    $arr_catalog =  get_catalog_tovarov_v_mp('ozon_ip_zel', $pdo);
-    
-    if ($ozon_update_items_quantity <> "no_data") {
-    
-        // добавляем к массиву артикул
-        foreach ($ozon_update_items_quantity as &$item) {
-        
-            foreach ($arr_catalog as $prods) {
-             if ($item ['sku'] == $prods['barcode']) {
-                $item['article'] = $prods['mp_article'];
-                $item['real_sku'] = $prods['sku'];
-             }
-            }
-        }
-    
-        unset($item);
-        
-        // Формируем массив для метода ОЗОНа по обновления остатков
-        foreach ($ozon_update_items_quantity as $prods) {
-            $temp_data_send[] = 
-                array(
-                    "offer_id" =>  $prods['article'],
-                    "product_id" =>   $prods['real_sku'], // для обновления нужен СКУ а не баркод (поэтому подставляем СКУ)
-                    "stock" => $prods['amount'],
-                   );
-            }
-
-
-
-            // print_r($temp_data_send);
- 
-            // die('jjj');
-
-
-        $send_data =  array("stocks" => $temp_data_send);
-        $send_data = json_encode($send_data, JSON_UNESCAPED_UNICODE)  ;
-        $ozon_dop_url = "v1/product/import/stocks";
-        $result_ozon = post_with_data_ozon($token_ozon_ip, $client_id_ozon_ip, $send_data, $ozon_dop_url );
-        }
-    
-        // print_r($result_ozon);
-
-        // die('jjj');
+    update_ostatki_OZON($arr_tokens,$pdo, 'ozon_ip_zel') ;
+    // update_OZON_IP_Zel($arr_tokens,$pdo);
 
     }
 
@@ -167,9 +57,66 @@ $token_ozon_ip = $arr_tokens['ozon_ip_zel']['token'];
     header('Location: get_all_ostatki_skladov_new.php?return=777', true, 301);
 
 
+ die('jjjjjjjjjjjjjj');
 
+ /// Обновление остаток на ВБ из POST  запроса
+ function update_ostatki_WB($arr_tokens, $warehouseId , $shop_name) {
+    $token_wb = $arr_tokens[$shop_name]['token'];
+    $wb_update_items_quantity = razbor_post_massive_mp($_POST);
+    
+    
+    print_r ($wb_update_items_quantity);
+    if ($wb_update_items_quantity <> "no_data") {
+        foreach ($wb_update_items_quantity as $wb_item) {
+            $data_wb["stocks"][] = $wb_item;
+        }
+    
+        }
 
+    $link_wb = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$warehouseId;
+    $res = put_query_with_data($token_wb, $link_wb, $data_wb);
+    
+}
 
+function update_ostatki_OZON($arr_tokens,$pdo, $shop_name) {
+   // ОЗОН АНМКАС
+   $client_id_ozon = $arr_tokens[$shop_name]['id_market'];
+   $token_ozon = $arr_tokens[$shop_name]['token'];
+   
+   $ozon_update_items_quantity = razbor_post_massive_mp($_POST);
+   $arr_catalog =  get_catalog_tovarov_v_mp($shop_name, $pdo);
+   
+   echo ("<pre>");
+   
+   if ($ozon_update_items_quantity <> "no_data") {
+   
+       // добавляем к массиву артикул
+       foreach ($ozon_update_items_quantity as &$item) {
+       
+           foreach ($arr_catalog as $prods) {
+            if ($item ['sku'] == $prods['barcode']) {
+               $item['article'] = $prods['mp_article'];
+               $item['real_sku'] = $prods['sku'];
+            }
+           }
+       }
+   
+       unset($item);
+       
+       // Формируем массив для метода ОЗОНа по обновления остатков
+       foreach ($ozon_update_items_quantity as $prods) {
+           $temp_data_send[] = 
+               array(
+                   "offer_id" =>  $prods['article'],
+                   "product_id" =>   $prods['real_sku'], // для обновления нужен СКУ а не баркод (поэтому подставляем СКУ)
+                   "stock" => $prods['amount'],
+                  );
+           }
+       $send_data =  array("stocks" => $temp_data_send);
+       $send_data = json_encode($send_data, JSON_UNESCAPED_UNICODE)  ;
+       $ozon_dop_url = "v1/product/import/stocks";
+       $result_ozon = post_with_data_ozon($token_ozon, $client_id_ozon, $send_data, $ozon_dop_url );
+       }
 
-echo "ffff";
-die('jjjjjjjjjjjjjj');
+}
+

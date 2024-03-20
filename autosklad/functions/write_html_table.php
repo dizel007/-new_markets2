@@ -113,10 +113,19 @@ foreach ($mp_catalog as $article) {
             } else {
                 echo "<td>".''."</td>";
             }
-        $article['fbo_only'] == 1?$koef_prodazh_FBO = 0:$koef_prodazh_FBO = 1;
         
-        // процент распределения товаров с учетом ФБО
-        $mag_proc_from_all_tovar = floor($article['procent_raspredelenia']/$all_procents*100*$koef_prodazh_FBO);
+            // Если товар продается только на ФБО, то убираем его с распределния по магазинам
+        if ($article['fbo_only'] == 1 ) {
+            $koef_prodazh_FBO = 0;
+            // процент распределения товаров с учетом ФБО
+            $mag_proc_from_all_tovar = 0;
+        }
+        else {
+            $koef_prodazh_FBO = 1;
+            $mag_proc_from_all_tovar = floor($article['procent_raspredelenia']/$all_procents*100*$koef_prodazh_FBO);
+        }
+        
+        
         
             echo "<td>".$all_procents."/".$article['procent_raspredelenia']."/".$mag_proc_from_all_tovar."</td>";
         // Для нескольких артикулов в магазинеЮ сколько каждому артикулу товара
@@ -170,3 +179,99 @@ echo  "<td>$check_update</td>";
         
         HTML;
 }
+
+
+
+
+/**************************************************************************************
+* Функция обшую таблицу прода 
+**************************************************************************************/
+function write_table_Sum_information ($arr_new_ostatoki_MP, $arr_sell_tovari, $arr_need_ostatok) {
+// формируем
+
+foreach ($arr_new_ostatoki_MP as $key=>$count) {
+    $arr_new_ostatoki_MP_new[mb_strtolower($key)] = $count;
+}
+
+foreach ($arr_need_ostatok as $key=>$count) {
+    $arr_need_ostatok_new[mb_strtolower($key)] = $count;
+}
+
+foreach ($arr_sell_tovari as $key=>$count) {
+    $arr_sell_tovari_new[mb_strtolower($key)] = $count;
+}
+
+
+
+    echo <<<HTML
+    <div class="center_form">
+    <form action="#" method="post">
+    <table>
+    
+    <tr class="prods_table">
+    
+        <td colspan="12" >Суммарная информация по всем артикулам</td>
+    
+    
+    </tr>
+    
+    
+    <tr class="prods_table">
+        <!-- <td width="30">пп</td> -->
+        <td width="100">артикул 1С</td>
+        <td>Oстатки из 1С всего</td>
+        <td>Кол-во продано </td>
+        <td>Миним остаток</td>
+        <td>Требутеся </td>
+    
+    
+    
+    </tr>
+    HTML;
+       
+    
+
+foreach ($arr_new_ostatoki_MP_new as $key=>$article) {
+echo "<tr class= \"prods_table\">";
+    echo "<td>".$key."</td>";
+    
+   
+    if (isset($arr_new_ostatoki_MP_new[mb_strtolower($key)])) {
+        $ostatok_iz_1C = $arr_new_ostatoki_MP_new[mb_strtolower($key)];
+        echo "<td>".$ostatok_iz_1C."</td>";
+    } else {
+        echo "<td></td>";
+    }
+
+    if (isset($arr_sell_tovari_new[mb_strtolower($key)])) {
+        $sell_tovari = $arr_sell_tovari_new[mb_strtolower($key)];
+        echo "<td>".$sell_tovari."</td>";
+    } else {
+        $sell_tovari=0; 
+        echo "<td></td>";
+    }
+
+    if (isset($arr_need_ostatok_new[mb_strtolower($key)])) {
+        $need_ostatok = $arr_need_ostatok_new[mb_strtolower($key)];
+        echo "<td>".$need_ostatok ."</td>";
+    } else {
+        echo "<td></td>";
+    }
+    $temp = $need_ostatok- ($ostatok_iz_1C - $sell_tovari);
+
+    if ($temp >=0) {
+        $need_ostatok = $arr_need_ostatok_new[mb_strtolower($key)];
+        echo "<td>".$temp ."</td>";
+    } else {
+        echo "<td>0</td>";
+    }
+
+
+
+echo "</tr>";
+
+
+        }
+echo "</table>";
+echo "</from>";
+    }
