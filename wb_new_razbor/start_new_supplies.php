@@ -1,27 +1,33 @@
 <?php
 require_once "../connect_db.php";
 
+
+require_once 'libs/fpdf/fpdf.php'; // библиотккеа для создания ПДф файилов
+
+
+
 require_once "functions/functions.php";
 require_once "functions/recover_func.php"; // функции для восстановления работы вб
 require_once "functions/make_1c_func.php"; // создания файла для 1С
 require_once "functions/make_zip_func.php";
 
 
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel.php';
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
-require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
+// require_once '../libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
 
 // require_once "../loading/loading.php"; // функция вывода картинки с загрузкой
-function write_info_filelog($path, $info_comment) {
 
-    // echo $path."<br>";
-    // echo $path."<br>";
+
+// die('Ostanovili rabotu / Dieknilu tut ');
+
+// функция записи логов в файл
+function write_info_filelog($path, $info_comment) {
     $stamp_date = date('Y-m-d H:i:s');
     file_put_contents( $path, PHP_EOL.$stamp_date."-".$info_comment ,FILE_APPEND);
     usleep(10000); // трата на времени на добавление на вывод данных на экран
 };
 
-die('dddddddddddddddddddd DIE DIE dddddddddddddddddddddddddddddddddd');
 
 //******************************************************************************************
 
@@ -112,7 +118,7 @@ foreach ($new_arr_new_zakaz  as $key => $items) {
     write_info_filelog ($file_Log_name,"Разбираем артикул: $key "); // Вывод коммент-я на экран
 
 //******************************************************************************************
-    $time_script = count($new_arr_new_zakaz[$key]) * 50;
+    $time_script = count($new_arr_new_zakaz[$key]) * 0;
     write_info_filelog ($file_Log_name, "TimeScript = $time_script");
     set_time_limit($time_script);
 
@@ -168,7 +174,7 @@ usleep(300000); // трата на создание Поставки на сай
     
     $result_insert_order_in_supply = test_find_order_in_supply ($token_wb, $orderId, $supplyId['id']); // Проверяем добав-ся заказ в поставку или нет
 // Проверка того что заказ добавился в поставку
-    for ($jjj = 0; $jjj < 10; $jjj++)  {  
+    for ($jjj = 0; $jjj < 20; $jjj++)  {  
         if ($result_insert_order_in_supply != 0) { // если заказа нет в поставке, то запускаем повтор добавления заказа в поставку
             write_info_filelog ($file_Log_name,"(СБОЙ)Признак $jjj обмена = $result_insert_order_in_supply ; Старт ПОВТОРА доб-я Заказа: $orderId в Поставку: ".$supplyId['id'] ); // Вывод коммент-я на экран
             make_sborku_one_article_one_zakaz ($token_wb, $supplyId['id'], $orderId);

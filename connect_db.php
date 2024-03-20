@@ -8,7 +8,8 @@ require_once 'libs/PHPExcel-1.8/Classes/PHPExcel.php';
 require_once 'libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
 require_once 'libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
 
-require_once 'libs/fpdf/fpdf.php'; // библиотккеа для создания ПДф файилов
+
+
 
 require_once 'pdo_functions/pdo_functions.php'; // подключаем функции  взаимодейцстя  с БД
  

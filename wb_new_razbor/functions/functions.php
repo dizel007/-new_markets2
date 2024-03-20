@@ -166,7 +166,7 @@ function get_orders_from_supply($token_wb, $supplyId) {
 ************************************* Получаем стикеры по номерам заказа  **************************************
 ****************************************************************************************************************/
 
-	function get_stiker_from_supply ($token_wb, $arr_orders, $N_1C_zakaz, $article,$path_stikers_orders) {
+function get_stiker_from_supply ($token_wb, $arr_orders, $N_1C_zakaz, $article,$path_stikers_orders) {
 		$dop_link="?type=png&width=40&height=30";  // QUERY PARAMETERS
 		$link_wb  = "https://suppliers-api.wildberries.ru/api/v3/orders/stickers".$dop_link;;
 
@@ -307,7 +307,7 @@ print_r($res_stikers);
 
 
 // ***************** ФОРМИРУЕМ ПДФ файл ***************************
-		require_once "libs/fpdf/fpdf.php";
+		// require_once "../libs/fpdf/fpdf.php";
 		//create pdf object
 		// $pdf = new FPDF('L','mm', array(80, 106)); // задаем пдф файл размером с пнг файл
 

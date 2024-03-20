@@ -1,4 +1,5 @@
 <?php
+require_once "../connect_db.php";
 
 require_once "functions/functions.php";
 require_once "functions/recover_func.php";
@@ -6,6 +7,16 @@ require_once "functions/send_mail_func.php";
 
 // require_once "functions/dop_moduls_for_orders.php";
 usleep(500000); // трата на транзакции на сайте ВБ (перевод состояния поставок)
+
+
+// функция записи логов в файл
+function write_info_filelog_2($path, $info_comment) {
+    $stamp_date = date('Y-m-d H:i:s');
+    file_put_contents( $path, PHP_EOL.$stamp_date."-".$info_comment ,FILE_APPEND);
+    usleep(10000); // трата на времени на добавление на вывод данных на экран
+};
+
+$new_path = 'reports/'.$new_date."/".$Zakaz_v_1c;
 
 $file_json = $_POST['json_path'];
 $token_wb = $_POST['token'];
@@ -20,9 +31,18 @@ $Zakaz_v_1c = $_POST['Zakaz1cNumber'];
 $data = file_get_contents($file_json);
 $arr_data = json_decode($data,true);
 
+
+$file_Log_name = $path_arhives.'/..'; // название файла с логами
+$file_Log_name = $file_Log_name.'/filelog.txt'; // название файла с логами
+
+
+//********************* OutPut КОММЕНТАРИЙ *******************************************
+write_info_filelog_2 ($file_Log_name,"Начали собирать Заказ :$Zakaz_v_1c");
+
 echo "Начали собирать Заказ :$Zakaz_v_1c.<br>";
 echo "<pre>";
 // print_r($arr_data);
+
 
 
 

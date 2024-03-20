@@ -1,5 +1,4 @@
 <?php
-
 function make_stikers_zip ($ArrFileNameForZIP, $path_arhives, $Zakaz_v_1c, $path_stikers_orders, $new_path, $file_name_1c_list_q ) {
     $zip_new = new ZipArchive();
     $zip_new->open($path_arhives."/"."Stikers_".$Zakaz_v_1c." от ".date("Y-M-d").".zip", ZipArchive::CREATE|ZipArchive::OVERWRITE);
