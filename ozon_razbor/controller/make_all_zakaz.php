@@ -9,8 +9,8 @@ require_once 'make_1c_file.php';
 
 $token_ozon = $_GET['token_ozon'];
 $client_id_ozon = $_GET['client_id_ozon'];
-echo $client_id_ozon."<br>";
-echo $token_ozon."<br>";
+// echo $client_id_ozon."<br>";
+// echo $token_ozon."<br>";
 
 
 $date_query_ozon = $_GET['date_query_ozon'];
@@ -41,7 +41,7 @@ make_new_dir_z($path_zip_archives,0); // создаем папку с датой
 // die('kmnfjbflkbfg');
 
 // вычитываем все Заказы н эту дату
-$res = get_all_waiting_posts_for_need_date($token, $client_id, $date_query_ozon, "awaiting_packaging", $dop_days_query);
+$res = get_all_waiting_posts_for_need_date($token_ozon, $client_id_ozon, $date_query_ozon, "awaiting_packaging", $dop_days_query);
 
 // сохраняем JSON всех заказов 
 $string_json_all_order = json_encode($res);
@@ -65,11 +65,15 @@ $i=0;
     $i++;
    }
 
+if (!isset($arr_for_zakaz)) {
+    echo "<br><h2> Нет массива данных на дату <b>[".$date_query_ozon."]</b> в состоянии <b>[ОЖИДАЮТ СБОРКИ]</b> DIE </h2><br>";
+    die();
+}
 // если есть Заказы на ОЗОН, то перебираем все отправления по одному и формируем JSON для отправки в ОЗОН
     // echo "<pre>";
 foreach ($arr_for_zakaz as $one_post) {
     // echo "<br>==/ Следующий заказ /==";
-    $result = make_packeges_for_one_post($token, $client_id,$one_post);
+    $result = make_packeges_for_one_post($token_ozon, $client_id_ozon,$one_post);
     usleep(10000);
     $array_list_podbora[] = $result['list_podbora'];
     $array_oben[] = $result['obmen'];

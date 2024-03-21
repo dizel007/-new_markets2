@@ -16,7 +16,7 @@ function write_info_filelog_2($path, $info_comment) {
     usleep(10000); // трата на времени на добавление на вывод данных на экран
 };
 
-$new_path = 'reports/'.$new_date."/".$Zakaz_v_1c;
+// $new_path = 'reports/'.$new_date."/".$Zakaz_v_1c;
 
 $file_json = $_POST['json_path'];
 $token_wb = $_POST['token'];

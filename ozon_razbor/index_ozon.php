@@ -15,7 +15,10 @@ if (isset($_GET['date_query_ozon'])) {
     $dop_days_query = $_GET['dop_days_query'];
 
 }else {
-    $date_query_ozon =''; 
+    // $date_query_ozon =''; 
+    $date_query_ozon = date('Y-m-d'); 
+    $dop_days_query = 0;
+
 }
 
 echo <<<HTML

@@ -3,7 +3,7 @@
 
 sleep(2);
 // Получаем списрк заказов готовых к отправлению (Берем только на выбранное число)
-$res = get_all_waiting_posts_for_need_date($token, $client_id, $date_query_ozon, "awaiting_deliver",0);
+$res = get_all_waiting_posts_for_need_date($token_ozon, $client_id_ozon, $date_query_ozon, "awaiting_deliver",0);
 
 
 
@@ -59,7 +59,7 @@ echo "Строка заказов артикула: $string_etiket<br>";
 $good_key = make_rigth_file_name($key); // убираем все запрещенные символы в наименовании файла
 
 $pdf_file_name = $nomer_zakaz." (".$good_key.") ".count($posts)."шт";
-get_all_barcodes_for_all_sending ($token, $client_id,  $string_etiket, $pdf_file_name, $path_etiketki);
+get_all_barcodes_for_all_sending ($token_ozon, $client_id_ozon,  $string_etiket, $pdf_file_name, $path_etiketki);
 $Arr_filenames_for_zip[] = $pdf_file_name.".pdf"; // массив в названиями пдф фаилами (чтобы а ЗИП архив их добавить)
 }
 
