@@ -14,6 +14,7 @@ switch ($transition) {
 
         break;
 
+
     case 11: // Разбор ВБ ИП
         require_once('wb_new_razbor/index_wbip.php');
 
@@ -33,9 +34,11 @@ switch ($transition) {
 
     case 50: // Автосклад
         require_once('autosklad/start_mp.php');
-
-
+       break;
+    case 51: // Разбор ВБ
+        require_once('autosklad/start_mp.php');
         break;
+
 
         // 
     case 0: // основная таблица со всеми КП

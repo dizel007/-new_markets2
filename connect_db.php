@@ -1,14 +1,12 @@
 <?php
 
+echo  "ПРОШЛИ КОННЕКТ<br>";
 require_once ("main_info.php");
-
 
 // ************************************** PHP EXCEL  ***********************************
 require_once 'libs/PHPExcel-1.8/Classes/PHPExcel.php';
 require_once 'libs/PHPExcel-1.8/Classes/PHPExcel/Writer/Excel2007.php';
 require_once 'libs/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php';
-
-
 
 
 require_once 'pdo_functions/pdo_functions.php'; // подключаем функции  взаимодейцстя  с БД

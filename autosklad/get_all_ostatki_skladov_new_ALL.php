@@ -82,13 +82,6 @@ $uploadfile = $uploaddir . basename( $_FILES['file_excel']['name']);
 // Доставем информацию по складам ****** АКТИВНЫМ СКЛАДАМ ******
 $sklads = select_info_about_sklads($pdo); // ОБщая Информация по складам
 
-
-// Находим общее количество проценьлв, которое нужно распределить
-// $all_procent_for_all_shops=0;
-// foreach ($sklads as $sklad) {
-// $all_procent_for_all_shops+=$sklad['procent']; // сумма всех процентов для распрделения
-// }
-
 $arr_need_ostatok = get_min_ostatok_tovarov($pdo); // массив с утвержденным неснижаемым остатком
 
 // Вся продаваемая номенклатура
@@ -111,9 +104,6 @@ $ozon_ip_catalog = get_catalog_tovarov_v_mp($ozon_ip, $pdo); // получаем
 
 
 // Формируем массив в номенклатурой, с учетом того, что один товар можнт продаваться под разным артикулом на Маркете
-
-
-
 
 /* *****************************      Получаем Фактические остатки с ВБ *****************************/
 $wb_catalog = get_ostatki_wb ($token_wb, $wb_catalog, $sklads[$wb_anmaks ]['warehouseId']);
@@ -175,31 +165,128 @@ $ozon_catalog = add_all_info_in_catalog ($ozon_catalog, $all_catalogs, $arr_sell
 $ozon_ip_catalog = add_all_info_in_catalog ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari) ;
 
 // $arr_all_nomenklatura;  // - перечень номенклатуры 
-// print_r($wb_catalog);
+// print_r($arr_all_nomenklatura);
 // die();
+// print_r($wb_catalog[0]);
+
+
+$link_all_update = "update_all_markets_ALL.php";
+echo "<form action=\"$link_all_update\" method=\"post\">";
+echo "<table class=\"prods_table\">";
+echo "<tr>";
+
+//  ******************* j,ofz byajhvfwbz
+echo "<td>";
+echo "<table>";
+echo "<tr>";
+
+echo "<td>Артикул<br> 1С</td>";
+echo "<td>Кол-во 1с</td>";
+echo "<td>SELL</td>";
+echo "</tr>";
+ foreach ($arr_all_nomenklatura as $item) {
+    echo "<tr>";
+    echo "<td>".$item['main_article_1c']."</td>";
+    echo "<td>".$arr_new_ostatoki_MP[mb_strtolower($item['main_article_1c'])]."</td>";
+    echo "<td>".@$arr_sell_tovari[mb_strtolower($item['main_article_1c'])]."</td>";
+
+// echo "<td><input  type=\"checkbox\" name=\"\" readonly> </td>"; 
+}
+echo "</tr>";
+echo "</table>";
+    echo "</td>";
+
+// ******************************************* WB OOO **************************************
+echo "<td>";
+show_update_part_table($arr_all_nomenklatura, $arr_new_ostatoki_MP, $wb_catalog, $wb_anmaks);
+echo "</td>";
+
+ //******************************************* * WB IP ************************ 
+echo "<td>";
+show_update_part_table($arr_all_nomenklatura, $arr_new_ostatoki_MP, $wbip_catalog,$wb_ip);
+echo "</td>";
+
+//******************************************* * WB IP ************************ 
+echo "<td>";
+show_update_part_table($arr_all_nomenklatura, $arr_new_ostatoki_MP, $ozon_catalog, $ozon_anmaks);
+echo "</td>";
+
+
+//******************************************* * WB IP ************************ 
+echo "<td>";
+show_update_part_table($arr_all_nomenklatura, $arr_new_ostatoki_MP, $ozon_ip_catalog,$ozon_ip);
+echo "</td>";
 
 
 
-write_table_shapka('update_all_markets.php', 'ВБ ООО ТД АНМАКС');
-write_BODY_table ($wb_catalog, $all_catalogs, $arr_sell_tovari, $wb_anmaks  ) ;
+
+/***************************************************************
+ * *********************** ЩЯЩТ
+ */
+echo "</tr>";
+echo "<input class=\"btn\" type=\"submit\" value=\"ОБНОВИТЬ ALLLL ДАННЫЕ\">";
+
+echo "</table>";
 
 
-// // // выводим шапку таблицы ВБ ИП ГОР
-write_table_shapka('update_all_markets.php', 'ВБ ИП' );
-write_BODY_table ($wbip_catalog, $all_catalogs, $arr_sell_tovari, $wb_ip ) ;
-
-// // выводим шапку таблицы ОЗОН ООО
-write_table_shapka('update_all_markets.php' , 'ОЗОН ООО ТД АНМАКС');
-write_BODY_table ($ozon_catalog, $all_catalogs, $arr_sell_tovari, $ozon_anmaks ) ;
-
-// выводим шапку таблицы ОЗОН ООО
-write_table_shapka('update_all_markets.php' , 'ОЗОН ИП ЗЕЛ');
-write_BODY_table ($ozon_ip_catalog, $all_catalogs, $arr_sell_tovari, $ozon_ip ) ;
-
-// print_r($arr_new_ostatoki_MP);
-// print_r($arr_sell_tovari);
-// print_r($arr_need_ostatok); // массив с утвержденным неснижаемым остатком
-// print_r($arr_all_nomenklatura); // Вся продаваемая номенклатура
+die('dddddddddddddddddddddddddddddddddddd');
 
 
-die();
+
+function show_update_part_table($arr_all_nomenklatura, $arr_new_ostatoki_MP, $mp_catalog, $mp_name) {
+
+
+    echo "<table >";
+    echo "<tr>";
+   
+    echo "<td>Артикул МП</td>";
+    echo "<td>Кол-во МП<br>факт</td>";
+    echo "<td>Кол-во МП<br> Upd</td>";
+    echo "<td>Upd</td>";
+
+     foreach ($arr_all_nomenklatura as $item) {
+        echo "<tr>";
+        echo "<td>".$item['main_article_1c']."</td>";
+    
+    // ******************************************* WB OOO **************************************
+
+        foreach ($mp_catalog as $temp_item) {
+            if (mb_strtolower($temp_item['main_article']) == mb_strtolower($item['main_article_1c'])) {
+                $temp_sku =$temp_item['sku'];
+                echo "<td>".$temp_item['mp_article']."</td>";
+                echo "<td>".$temp_item['quantity']."</td>";
+
+                $temp_barcode = $temp_item['barcode'];
+                $name_for_barcode = "_".$mp_name."_mp_BarCode_".$temp_sku;
+                $name_for_value = "_".$mp_name."_mp_value_".$temp_sku;
+                $kolvo_tovarov_dlya_magazina = $temp_item['kolvo_tovarov_dlya_magazina'];
+
+                
+ echo <<<HTML
+        <input hidden type="text" name="$name_for_barcode" value=$temp_barcode>
+        <td><input class="text-field__input future_ostatok" type="number" name="$name_for_value" value=$kolvo_tovarov_dlya_magazina></td>
+HTML;
+
+               $check_update = $temp_item['nead_update'];
+               $name_for_checkUpdate = "_".$mp_name."_mp_check_".$temp_sku;
+               if ($check_update  == 1) {
+                   echo  "<td><input type=\"checkbox\" checked name=\"$name_for_checkUpdate\"> </td>";
+                 } else {
+                   echo  "<td><input type=\"checkbox\" name=\"$name_for_checkUpdate\" > </td>";
+                }
+
+
+            }
+        }
+
+        
+                   
+
+        echo "</tr>";
+        
+    }
+
+    echo "</table>";
+
+
+}

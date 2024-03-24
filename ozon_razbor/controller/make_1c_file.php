@@ -55,43 +55,6 @@ $kolvo_tovarov = 0;
 /******************************************************************************************************************
 ****** Функуия для формирования листа подбора (из обработанного массива)
 /******************************************************************************************************************/
-// СТАРАЯ ВЕРСИЯ ///////********************************************************************** */
-function make_list_podbara ($array_oben, $date_query_ozon, $nomer_zakaz, $path_excel_docs, $xls2) {
-      $xls2 = new PHPExcel();
-$xls2->setActiveSheetIndex(0);
-$sheet2 = $xls2->getActiveSheet();
-
-$i=1;
-
-
-foreach ($array_oben as $array_items) {
-
-    foreach ($array_items['additional_data'] as $items) {
-            $sheet2->setCellValue("A".$i, $items['posting_number']);
-            $sheet2->setCellValue("B".$i, $items['products'][0]['offer_id']);
-            $sheet2->setCellValue("C".$i, $items['products'][0]['name']);
-            $sheet2->setCellValue("D".$i, $items['products'][0]['quantity']);
-            $sheet2->setCellValue("E".$i, $items['products'][0]['price']);
-
-            $i++; // смешение по строкам
-
-}
-    $i++; // смешение по строкам
-    $sheet2->setCellValue("A".$i, "Следующий заказ");
-    $i++; // смешение по строкам
-}
-
-$i--;
-$sheet2->setCellValue("A".$i, "Процесс сборки завершен");
-$objWriter2 = new PHPExcel_Writer_Excel2007($xls2);
-
-$file_name_list_podbora = $date_query_ozon." (".$nomer_zakaz.") file_list_podbor.xlsx";
-$objWriter2->save($path_excel_docs."/".$file_name_list_podbora);
-
-return $file_name_list_podbora;
-}
-
-
 
 /******************************************************************************************************************
 ****** Функуия для формирования листа подбора (из обработанного массива)
@@ -177,3 +140,87 @@ $objWriter2->save($path_excel_docs."/".$file_name_list_podbora);
 
 return $file_name_list_podbora;
 }
+
+
+
+
+function make_list_podbora_new_2 ($array_oben, $date_query_ozon, $nomer_zakaz, $path_excel_docs, $xls2) {
+    /// фронтенд ексель файла
+    $bg = array(
+        'fill' => array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'color' => array('rgb' => 'd4fce7')
+        )
+    );
+    
+    $border_inside = array(
+        'borders'=>array(
+            'outline' => array(
+                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'color' => array('rgb' => '000000')
+            ),
+            'allborders' => array(
+                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                'color' => array('rgb' => '000000')
+            )
+        )
+    );
+    
+    //////////////////////////////////////////////////////////////////////////////
+    
+    $xls2 = new PHPExcel();
+    $xls2->setActiveSheetIndex(0);
+    $sheet2 = $xls2->getActiveSheet();
+    
+            // Поля
+            $sheet2->getPageMargins()->setTop(0.5);
+            $sheet2->getPageMargins()->setRight(0.5);
+            $sheet2->getPageMargins()->setLeft(0.5);
+            $sheet2->getPageMargins()->setBottom(0.5);
+            // Ширина столбцов
+            $sheet2->getColumnDimension("A")->setWidth(16); // ширина столбца
+            $sheet2->getColumnDimension("B")->setWidth(16); // ширина столбца
+            $sheet2->getColumnDimension("C")->setWidth(60); // ширина столбца
+    
+    $i=1;
+    
+    $sheet2->setCellValue("A".$i, "Первый заказ");
+    $i++; // смешение по строкам
+    
+    
+    
+    
+    
+    
+    foreach ($array_oben as $array_items) {
+        $i2=$i-1;
+        $sheet2->getStyle("A".$i2.":E".$i2 )->applyFromArray($bg); // фон
+      foreach ($array_items['additional_data'] as $items) {
+              $sheet2->setCellValue("A".$i, $items['posting_number']);
+              $sheet2->setCellValue("B".$i, $items['products'][0]['offer_id']);
+              $sheet2->setCellValue("C".$i, $items['products'][0]['name']);
+              $sheet2->setCellValue("D".$i, $items['products'][0]['quantity']);
+              $sheet2->setCellValue("E".$i, $items['products'][0]['price']);
+    
+              $i++; // смешение по строкам
+    
+    }
+    
+      $i++; // смешение по строкам
+      $sheet2->setCellValue("A".$i, "Следующий заказ");
+      $i++; // смешение по строкам
+    }
+    
+    $i--;
+    $sheet2->setCellValue("A".$i, "Процесс сборки завершен");
+    
+    $sheet2->getStyle("A1:E".$i)->applyFromArray($border_inside); // разлинейка ячеек
+    
+    
+    $objWriter2 = new PHPExcel_Writer_Excel2007($xls2);
+    
+    $file_name_list_podbora = $date_query_ozon." (".$nomer_zakaz.") file_list_podbor.xlsx";
+    $objWriter2->save($path_excel_docs."/".$file_name_list_podbora);
+    
+    return $file_name_list_podbora;
+    }

@@ -4,7 +4,7 @@ require_once "connect_db.php";
 echo <<<HTML
 
 
-<form action= "autosklad/get_all_ostatki_skladov_new.php" method="post" enctype="multipart/form-data">
+<form action= "autosklad/get_all_ostatki_skladov_new_ALL.php" method="post" enctype="multipart/form-data">
 
 
 

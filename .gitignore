@@ -4,3 +4,7 @@ autosklad/uploads
 main_info.php
 connect_db.php
 login.php
+
+
+ozon_razbor/reports/
+wb_new_razbor/reports/
