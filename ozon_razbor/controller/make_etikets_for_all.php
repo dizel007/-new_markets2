@@ -74,6 +74,10 @@ foreach ($res['result']['postings'] as $posts_z) {
 
 // перебираем поартикульный массив и формируем строку со списком заказов (поартикульно)
 foreach ($arr_article_tovar as $key=> $posts) {
+  
+  $time_script = 300 + count($arr_article_tovar[$key]) * 50;
+  set_time_limit($time_script);
+
   $string_etiket = '';
   foreach ($posts as $post) {
   $string_etiket =@$string_etiket."\"".$post['posting_number']."\", ";

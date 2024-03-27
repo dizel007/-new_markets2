@@ -35,9 +35,15 @@ switch ($transition) {
     case 50: // Автосклад
         require_once('autosklad/start_mp.php');
        break;
-    case 51: // Разбор ВБ
-        require_once('autosklad/start_mp.php');
+    case 61: // ОЗОН СКИДКА
+        require_once('ozon_skidka/index_ozon_skidka.php');
         break;
+
+
+
+
+        //    header('ozon_report/index_ozon_razbor.php', true, 301); 
+
 
 
         // 
@@ -56,6 +62,17 @@ switch ($transition) {
         echo "<a href = \"?transition=21\">Разбор ОЗОН ИП Зел</a>";
         echo "<br><br>";
         echo "<a href = \"?transition=31\">Разбор ЯндексМаркет ООО ТД Анмакс</a>";
+        echo "<br><br>";
+        echo "<br><br>";
+        echo "<br>*********************** СКИДКА ******************************<br>";  
+        
+        echo "<a href= \"ozon_skidka/index_ozon_skidka.php\"> ОЗОН СКИДКА</a>";
+        
+        echo "<br><br>";
+        echo "<br>*********************** REPORTS ******************************<br>";
+        echo "<a href= \"ozon_report/index_ozon_razbor.php?ozon_shop=ozon_anmaks\"> ОЗОН АНМАКС</a>";
+        echo "<br><br>";
+        echo "<a href= \"ozon_report/index_ozon_razbor.php?ozon_shop=ozon_ip_zel\"> ОЗОН ИП Зел</a>";
         echo "<br><br>";
 
 

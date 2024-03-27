@@ -118,7 +118,7 @@ foreach ($new_arr_new_zakaz  as $key => $items) {
     write_info_filelog ($file_Log_name,"Разбираем артикул: $key "); // Вывод коммент-я на экран
 
 //******************************************************************************************
-    $time_script = count($new_arr_new_zakaz[$key]) * 0;
+    $time_script = count($new_arr_new_zakaz[$key]) * 50;
     write_info_filelog ($file_Log_name, "TimeScript = $time_script");
     set_time_limit($time_script);
 

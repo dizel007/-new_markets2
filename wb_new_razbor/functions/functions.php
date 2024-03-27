@@ -476,15 +476,19 @@ function make_right_articl($article) {
 					$new_article = '1940-10';
 			// Метровые борды
 				} else if ($article == '7245-К7245-К-16' ) {
-					$new_article = '7245-К-16';
+					$new_article = '7245-К-10-30';  // новый бордюр (подмена карточки)
+
 				} else if ($article == '7260-К-7260-К-12' ) {
-					$new_article = '7260-К-12';
+					$new_article = '7260-К-8-24';   // новый бордюр (подмена карточки)
+
 				} else if ($article == '7260-К7260-К-12' ) {
 					$new_article = '7260-К-12';
+
 				} else if ($article == '7280-К7280-К-80' ) {
 					$new_article = '7280-К-8';
+
 				} else if ($article == '7280-К-7280-К-8' ) {
-					$new_article = '7280-К-8';
+					$new_article = '7280-К-6-18'; // новый бордюр (подмена карточки)
 				} 
 			
 			// Вся неучтенка    

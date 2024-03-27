@@ -24,7 +24,8 @@ function send_injection_on_ozon($token, $client_id, $send_data, $ozon_dop_url ) 
 	
 	$res = json_decode($res, true);
 
-//    echo     'Результат обмена : '.$http_code. "<br>";
+   echo     'Результат обмена : '.$http_code. "<br>";
+   
    
     return($res);	
 
@@ -35,8 +36,10 @@ function send_injection_on_ozon($token, $client_id, $send_data, $ozon_dop_url ) 
 ************************************************************************************************************** */
 
 function post_with_data_ozon($token_ozon, $client_id_ozon, $send_data, $ozon_dop_url ) {
- 
-	$ch = curl_init('https://api-seller.ozon.ru/'.$ozon_dop_url);
+	$link = 'https://api-seller.ozon.ru/'.$ozon_dop_url;
+	echo     'Результssssат обмена : '.$link. "<br>";
+
+	$ch = curl_init($link);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Api-Key:' . $token_ozon,
 		'Client-Id:' . $client_id_ozon, 
@@ -57,6 +60,7 @@ function post_with_data_ozon($token_ozon, $client_id_ozon, $send_data, $ozon_dop
     if (intdiv($http_code,100) > 2) {
         echo     'Результат обмена озон: '.$http_code. "<br>";
         }
-   
+		echo     'Результssssат обмена : '.$http_code. "<br>";
+
     return($res);	
     }
